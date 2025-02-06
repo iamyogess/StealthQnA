@@ -30,7 +30,7 @@ export default function VerificationEmail({
           </code>
         </div>
         <p className="text-sm text-gray-500">
-          This code will expire in 15 minutes.
+          This code will expire in 1 hour.
         </p>
       </div>
       <div className="bg-gray-50 p-4 text-center text-xs text-gray-500">

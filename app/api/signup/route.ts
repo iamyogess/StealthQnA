@@ -9,6 +9,18 @@ export async function POST(request: Request) {
   try {
     const reqBody = await request.json();
     const { username, email, password } = reqBody;
+
+    // Input validation
+    if (!username || !email || !password) {
+      return Response.json(
+        {
+          success: false,
+          message: "Missing required fields!",
+        },
+        { status: 400 }
+      );
+    }
+
     const existingUserVerifiedByUsername = await UserModel.findOne({
       username,
       isVerified: true,
@@ -29,6 +41,8 @@ export async function POST(request: Request) {
     });
 
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const expiryDate = new Date(Date.now() + 3600000); // 1 hour from now
 
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
@@ -40,16 +54,13 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       } else {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // existingUserByEmail.username = username; // Add username update
         existingUserByEmail.password = hashedPassword;
         existingUserByEmail.verifyCode = verifyCode;
-        existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
+        existingUserByEmail.verifyCodeExpiry = expiryDate;
         await existingUserByEmail.save();
       }
     } else {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const expiryDate = new Date();
-      expiryDate.setHours(expiryDate.getHours() + 1);
       const newUser = new UserModel({
         username,
         email,
@@ -63,7 +74,6 @@ export async function POST(request: Request) {
       await newUser.save();
     }
 
-    //send verification email
     const emailResponse = await sendVerificationEmail(
       username,
       email,
