@@ -1,0 +1,18 @@
+meta {
+  name: SEND MESSAGE
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000/api/send-message
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username":"iamyogess",
+    "content":"hello how are you mr yogesh shresetha"
+  }
+}
