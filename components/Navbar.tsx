@@ -7,6 +7,17 @@ import { User } from "next-auth";
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +34,7 @@ const Navbar = () => {
               href="/"
               className="text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600"
             >
-              STEALTH CHAT
+              STEALTH Q&A
             </Link>
           </div>
 
@@ -63,16 +74,41 @@ const Navbar = () => {
                   <span className="text-sm text-muted-foreground">
                     Welcome, {user?.username || user?.email}
                   </span>
-                  <Button variant="outline" onClick={() => signOut()} size="sm">
-                    Log out
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        Log out
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          You will be logged out of your account. You can always log back in later.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => signOut()}>
+                          Log out
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               ) : (
+                <>
+                <Link href="/sign-up">
+                  <Button variant="default" size="sm">
+                    Sign Up
+                  </Button>
+                </Link>
                 <Link href="/sign-in">
                   <Button variant="default" size="sm">
                     Sign In
                   </Button>
                 </Link>
+                </>
               )}
             </div>
           </div>
@@ -96,16 +132,46 @@ const Navbar = () => {
                   <span className="text-sm text-muted-foreground">
                     Welcome, {user?.username || user?.email}
                   </span>
-                  <Button variant="outline" onClick={() => signOut()} size="sm">
-                    Log out
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        Log out
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          You will be logged out of your account. You can always log back in later.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => signOut()}>
+                          Log out
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               ) : (
+                <>
+                <Link href="/sign-up">
+                  <Button variant="default" size="sm">
+                    Sign Up
+                  </Button>
+                </Link>
                 <Link href="/sign-in">
                   <Button variant="default" size="sm">
                     Sign In
                   </Button>
                 </Link>
+                <Link href="/sign-in">
+                  <Button variant="default" size="sm">
+                    Sign In
+                  </Button>
+                </Link>
+                </>
               )}
             </div>
           </div>

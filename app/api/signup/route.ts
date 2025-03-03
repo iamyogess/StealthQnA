@@ -10,6 +10,8 @@ export async function POST(request: Request) {
     const reqBody = await request.json();
     const { username, email, password } = reqBody;
 
+    console.log(username,email,password)
+
     // Input validation
     if (!username || !email || !password) {
       return Response.json(

@@ -57,7 +57,7 @@ const LandingPage = () => {
                     </span>
                   </h1>
                   <p className="text-base md:text-lg text-gray-600 dark:text-zinc-400 max-w-xl mx-auto lg:mx-0">
-                    Express yourself freely with our anonymous messaging
+                    Express yourself freely with our anonymous Q&A
                     platform. Connect authentically without revealing your
                     identity.
                   </p>
@@ -75,7 +75,7 @@ const LandingPage = () => {
                           size="lg"
                           className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
                         >
-                          Get Started
+                          <Link href="/sign-up">Get Started</Link>
                         </Button>
                         <Button
                           size="lg"
@@ -94,7 +94,7 @@ const LandingPage = () => {
                   <FeatureCard
                     icon={Shield}
                     title="Anonymous"
-                    description="Send messages without revealing your identity"
+                    description="Send Q&A without revealing your identity"
                   />
                   <FeatureCard
                     icon={Lock}

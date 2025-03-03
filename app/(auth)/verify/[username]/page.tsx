@@ -21,7 +21,8 @@ import { z } from "zod";
 
 const VerifyAccount = () => {
   const router = useRouter();
-  const param = useParams<{ username: string }>();
+  const params = useParams<{ username: string }>();
+  const username = params?.username;
   const { toast } = useToast();
   const [verifying, setVerifying] = useState(false);
 
@@ -31,32 +32,45 @@ const VerifyAccount = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
+    if (!username) {
+      toast({
+        title: "Error",
+        description: "Username is missing",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setVerifying(true);
     try {
       const response = await axios.post(`/api/verify-code`, {
-        username: param.username,
+        username: username,
         code: data.code,
       });
       toast({
         title: "Success",
         description: response.data.message,
       });
-      router.replace("sign-in");
+      router.replace("/sign-in");
     } catch (error) {
       console.error("Error in verifying code!", error);
       const axiosError = error as AxiosError<ApiResponse>;
-      let errorMessage =
+      const errorMessage =
         axiosError.response?.data?.message ?? "Error in verifying code!";
       console.log("axios error", errorMessage);
       toast({
-        title: "Success failed!",
+        title: "Verification failed!",
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setVerifying(false);
     }
   };
 
   return (
-    <div>
+    <div className="max-w-screen-sm w-full mx-auto mt-24">
+      <h1 className="text-lg font-bold lg:text-xl my-4">Enter your 6 digit code here</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -68,31 +82,19 @@ const VerifyAccount = () => {
                 <FormControl>
                   <div className="relative">
                     <Input placeholder="Code here" {...field} />
-                    {/* {isCheckingUsername && <Loader />}
-                  <p
-                    className={`text-sm ${
-                      usernameMessage === "Username available :D"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {usernameMessage}
-                  </p> */}
                   </div>
                 </FormControl>
               </FormItem>
             )}
           />
           <Button type="submit" disabled={verifying}>
-            <div>
-              {verifying ? (
-                <>
-                  <Loader /> Please wait...
-                </>
-              ) : (
-                "Signup"
-              )}
-            </div>
+            {verifying ? (
+              <div className="flex items-center gap-2">
+                <Loader className="animate-spin" /> Please wait...
+              </div>
+            ) : (
+              "Verify"
+            )}
           </Button>
         </form>
       </Form>
