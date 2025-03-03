@@ -21,9 +21,10 @@ import { z } from "zod";
 
 const VerifyAccount = () => {
   const router = useRouter();
-  const param = useParams<{ username: string }>();
+  const params = useParams<{ username: string }>();
+  const username = params?.username;
   const { toast } = useToast();
-  const [verifying] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   //zod implementation
   const form = useForm<z.infer<typeof verifySchema>>({
@@ -31,9 +32,19 @@ const VerifyAccount = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
+    if (!username) {
+      toast({
+        title: "Error",
+        description: "Username is missing",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setVerifying(true);
     try {
       const response = await axios.post(`/api/verify-code`, {
-        username: param.username,
+        username: username,
         code: data.code,
       });
       toast({
@@ -48,10 +59,12 @@ const VerifyAccount = () => {
         axiosError.response?.data?.message ?? "Error in verifying code!";
       console.log("axios error", errorMessage);
       toast({
-        title: "Success failed!",
+        title: "Verification failed!",
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -75,15 +88,13 @@ const VerifyAccount = () => {
             )}
           />
           <Button type="submit" disabled={verifying}>
-            <div>
-              {verifying ? (
-                <>
-                  <Loader /> Please wait...
-                </>
-              ) : (
-                "Verify"
-              )}
-            </div>
+            {verifying ? (
+              <div className="flex items-center gap-2">
+                <Loader className="animate-spin" /> Please wait...
+              </div>
+            ) : (
+              "Verify"
+            )}
           </Button>
         </form>
       </Form>
