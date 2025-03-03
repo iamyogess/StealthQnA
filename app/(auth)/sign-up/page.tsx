@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
+import { Loader, Lock, Mail, UserPlus } from "lucide-react";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -75,6 +75,7 @@ const Signup = () => {
         title: "Success",
         description: response.data.message,
       });
+      // console.log(data)
       router.replace(`/verify/${username}`);
     } catch (error) {
       console.error("Error in signup!", error);
@@ -93,80 +94,150 @@ const Signup = () => {
   };
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      placeholder="Username"
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        debounced(e.target.value);
-                      }}
-                    />
-                    {isCheckingUsername && <Loader />}
-                    <p
-                      className={`text-sm ${
-                        usernameMessage === "Username available :D"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {usernameMessage}
-                    </p>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="Email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" disabled={submitting}>
-            <div>
-              {submitting ? (
-                <>
-                  <Loader /> Please wait...
-                </>
-              ) : (
-                "Signup"
+    <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8   p-8 rounded-lg shadow-lg border">
+        <div className="text-center">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
+            Create your account
+          </h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Already have an account?{" "}
+            <Link
+              href="/sign-in"
+              className="font-medium text-purple-600 hover:text-purple-500"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="mt-8 space-y-6"
+          >
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    Username
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder="Enter your username"
+                        className="pl-3 pr-10"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          debounced(e.target.value);
+                        }}
+                      />
+                      {isCheckingUsername && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <Loader className="h-4 w-4 animate-spin" />
+                        </div>
+                      )}
+                      {usernameMessage && (
+                        <p
+                          className={`mt-1 text-sm ${
+                            usernameMessage === "Username available :D"
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {usernameMessage}
+                        </p>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      className="pl-3"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                    Password
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Create a password"
+                      className="pl-3"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <Loader className="h-4 w-4 animate-spin" />
+                    <span>Creating account...</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4" />
+                    <span>Create Account</span>
+                  </>
+                )}
+              </Button>
             </div>
-          </Button>
-        </form>
-      </Form>
+          </form>
+        </Form>
+
+        <div className="mt-6">
+          <p className="text-xs text-center text-gray-600 dark:text-gray-400">
+            By signing up, you agree to our{" "}
+            <Link href="#" className="text-purple-600 hover:text-purple-500">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="#" className="text-purple-600 hover:text-purple-500">
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

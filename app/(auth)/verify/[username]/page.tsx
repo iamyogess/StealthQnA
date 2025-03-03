@@ -23,7 +23,7 @@ const VerifyAccount = () => {
   const router = useRouter();
   const param = useParams<{ username: string }>();
   const { toast } = useToast();
-  const [verifying, setVerifying] = useState(false);
+  const [verifying] = useState(false);
 
   //zod implementation
   const form = useForm<z.infer<typeof verifySchema>>({
@@ -40,11 +40,11 @@ const VerifyAccount = () => {
         title: "Success",
         description: response.data.message,
       });
-      router.replace("sign-in");
+      router.replace("/sign-in");
     } catch (error) {
       console.error("Error in verifying code!", error);
       const axiosError = error as AxiosError<ApiResponse>;
-      let errorMessage =
+      const errorMessage =
         axiosError.response?.data?.message ?? "Error in verifying code!";
       console.log("axios error", errorMessage);
       toast({
@@ -56,7 +56,8 @@ const VerifyAccount = () => {
   };
 
   return (
-    <div>
+    <div className="max-w-screen-sm w-full mx-auto mt-24">
+      <h1 className="text-lg font-bold lg:text-xl my-4">Enter your 6 digit code here</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -68,16 +69,6 @@ const VerifyAccount = () => {
                 <FormControl>
                   <div className="relative">
                     <Input placeholder="Code here" {...field} />
-                    {/* {isCheckingUsername && <Loader />}
-                  <p
-                    className={`text-sm ${
-                      usernameMessage === "Username available :D"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {usernameMessage}
-                  </p> */}
                   </div>
                 </FormControl>
               </FormItem>
@@ -90,7 +81,7 @@ const VerifyAccount = () => {
                   <Loader /> Please wait...
                 </>
               ) : (
-                "Signup"
+                "Verify"
               )}
             </div>
           </Button>
