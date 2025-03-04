@@ -14,7 +14,7 @@ import Link from "next/link";
 import React from "react";
 
 interface FeatureCardProps {
-  icon: LucideIcon; // Ensures 'icon' is a valid Lucide React icon
+  icon: LucideIcon;
   title: string;
   description: string;
 }
@@ -36,16 +36,15 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 );
 
 const LandingPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
   return (
     <>
       <div className="w-full bg-gray-50 dark:bg-black">
         <AuroraBackground className="bg-white/50 dark:bg-zinc-950/50">
-          {/* Hero Section */}
           <section className="pt-20 pb-12 md:pt-24 md:pb-16 px-4 relative">
             <div className="max-w-6xl mx-auto w-full">
               <div className="grid lg:grid-cols-2 gap-8 items-center">
-                {/* Left Column - Text Content */}
                 <div className="space-y-6 text-center lg:text-left">
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600">
@@ -62,7 +61,11 @@ const LandingPage = () => {
                     identity.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    {session ? (
+                    {status === "loading" ? (
+                      <Button size="lg" disabled>
+                        Loading...
+                      </Button>
+                    ) : session ? (
                       <Button
                         size="lg"
                         className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
@@ -89,8 +92,7 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* Right Column - Features Grid */}
-                <div className=" hidden lg:grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FeatureCard
                     icon={Shield}
                     title="Anonymous"
