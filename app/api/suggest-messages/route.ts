@@ -21,20 +21,19 @@ export async function GET() {
     const text = response.text();
 
     // Format the questions into an array
-    const questions = text.split('|l').map(q => q.trim());
+    const questions = text.split("|l").map((q) => q.trim());
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       questions,
-      raw: text 
+      raw: text,
     });
-
-  } catch (error: any) {
-    console.error('Error generating questions:', error);
+  } catch {
+    console.error("Error generating questions:");
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message || 'Failed to generate questions' 
+      {
+        success: false,
+        error: "Failed to generate questions",
       },
       { status: 500 }
     );
