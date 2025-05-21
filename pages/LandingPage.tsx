@@ -1,42 +1,40 @@
-"use client";
+"use client"
 
-import { AuroraBackground } from "@/components/ui/aurora-background";
-import { Button } from "@/components/ui/button";
-import {
-  MessageCircle,
-  Shield,
-  Lock,
-  Sparkles,
-  LucideIcon,
-} from "lucide-react";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import React from "react";
+import { AuroraBackground } from "@/components/ui/aurora-background"
+import { Button } from "@/components/ui/button"
+import { MessageCircle, Shield, Lock, Sparkles, type LucideIcon } from "lucide-react"
+import { useSession } from "next-auth/react"
+import Link from "next/link"
+import type React from "react"
+import { useEffect, useState } from "react"
 
 interface FeatureCardProps {
-  icon: LucideIcon;
-  title: string;
-  description: string;
+  icon: LucideIcon
+  title: string
+  description: string
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({
-  icon: Icon,
-  title,
-  description,
-}) => (
+const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, description }) => (
   <div className="flex flex-col items-center p-4 md:p-6 rounded-xl bg-white/5 dark:bg-black/20 backdrop-blur-sm border border-gray-200/20 dark:border-white/10 hover:border-gray-200/30 dark:hover:border-white/20 transition-all">
     <Icon className="w-6 h-6 md:w-8 md:h-8 mb-3 md:mb-4 text-purple-500 dark:text-purple-400" />
-    <h3 className="text-lg md:text-xl font-bold mb-2 text-gray-900 dark:text-white">
-      {title}
-    </h3>
-    <p className="text-xs md:text-sm text-gray-600 dark:text-zinc-400 text-center">
-      {description}
-    </p>
+    <h3 className="text-lg md:text-xl font-bold mb-2 text-gray-900 dark:text-white">{title}</h3>
+    <p className="text-xs md:text-sm text-gray-600 dark:text-zinc-400 text-center">{description}</p>
   </div>
-);
+)
 
 const LandingPage = () => {
-  const { data: session, status } = useSession();
+  // Client-side only session handling
+  const [isLoading, setIsLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { data: session, status } = useSession()
+
+  useEffect(() => {
+    // Only run on the client side
+    if (typeof window !== "undefined") {
+      setIsLoading(status === "loading")
+      setIsAuthenticated(!!session)
+    }
+  }, [session, status])
 
   return (
     <>
@@ -51,21 +49,18 @@ const LandingPage = () => {
                       Share Secrets
                     </span>
                     <br />
-                    <span className="text-gray-900 dark:text-white">
-                      Stay Anonymous
-                    </span>
+                    <span className="text-gray-900 dark:text-white">Stay Anonymous</span>
                   </h1>
                   <p className="text-base md:text-lg text-gray-600 dark:text-zinc-400 max-w-xl mx-auto lg:mx-0">
-                    Express yourself freely with our anonymous Q&A
-                    platform. Connect authentically without revealing your
-                    identity.
+                    Express yourself freely with our anonymous Q&A platform. Connect authentically without revealing
+                    your identity.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    {status === "loading" ? (
+                    {isLoading ? (
                       <Button size="lg" disabled>
                         Loading...
                       </Button>
-                    ) : session ? (
+                    ) : isAuthenticated ? (
                       <Button
                         size="lg"
                         className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
@@ -93,26 +88,14 @@ const LandingPage = () => {
                 </div>
 
                 <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FeatureCard
-                    icon={Shield}
-                    title="Anonymous"
-                    description="Send Q&A without revealing your identity"
-                  />
-                  <FeatureCard
-                    icon={Lock}
-                    title="Secure"
-                    description="End-to-end encrypted messaging"
-                  />
+                  <FeatureCard icon={Shield} title="Anonymous" description="Send Q&A without revealing your identity" />
+                  <FeatureCard icon={Lock} title="Secure" description="End-to-end encrypted messaging" />
                   <FeatureCard
                     icon={MessageCircle}
                     title="Custom Links"
                     description="Create your unique profile link"
                   />
-                  <FeatureCard
-                    icon={Sparkles}
-                    title="Interactive"
-                    description="Engage with threaded conversations"
-                  />
+                  <FeatureCard icon={Sparkles} title="Interactive" description="Engage with threaded conversations" />
                 </div>
               </div>
             </div>
@@ -120,7 +103,14 @@ const LandingPage = () => {
         </AuroraBackground>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default LandingPage;
+// Add this to prevent pre-rendering
+export const getServerSideProps = async () => {
+  return {
+    props: {},
+  }
+}
+
+export default LandingPage
