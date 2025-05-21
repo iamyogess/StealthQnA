@@ -1,68 +1,79 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/options";
-import { dbConnect } from "@/lib/dbConnect";
-import { UserModel } from "@/model/User";
-import { User as NextAuthUser } from "next-auth";
-import mongoose from "mongoose";
+import { getServerSession } from "next-auth"
+import { authOptions } from "../auth/[...nextauth]/options"
+import { dbConnect } from "@/lib/dbConnect"
+import { UserModel } from "@/model/User"
+import type { User as NextAuthUser } from "next-auth"
+import mongoose from "mongoose"
 
 interface AggregateUserResult {
-  _id: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId
   messages: Array<{
-    _id: string;
-    content: string;
-    createdAt: Date;
-  }>;
+    _id: string
+    content: string
+    createdAt: Date
+  }>
 }
 
 export async function GET() {
-  await dbConnect();
-  const session = await getServerSession(authOptions);
-  const authUser: NextAuthUser = session?.user as NextAuthUser;
-
-  if (!session || !session.user) {
-    return Response.json(
-      {
-        success: false,
-        message: "Not authenticated!",
-      },
-      { status: 401 }
-    );
-  }
-
-  const userId = new mongoose.Types.ObjectId(authUser._id);
   try {
+    await dbConnect()
+    const session = await getServerSession(authOptions)
+    const authUser = session?.user as NextAuthUser
+
+    if (!session || !authUser) {
+      return Response.json(
+        {
+          success: false,
+          message: "Not authenticated!",
+        },
+        { status: 401 },
+      )
+    }
+
+    if (!authUser._id) {
+      return Response.json(
+        {
+          success: false,
+          message: "Invalid user ID!",
+        },
+        { status: 400 },
+      )
+    }
+
+    const userId = new mongoose.Types.ObjectId(authUser._id)
+
     const users = await UserModel.aggregate<AggregateUserResult>([
-      { $match: { id: userId } },
+      { $match: { _id: userId } }, // Changed from 'id' to '_id' to match MongoDB document field
       { $unwind: "$messages" },
       { $sort: { "messages.createdAt": -1 } },
       { $group: { _id: "$_id", messages: { $push: "$messages" } } },
-    ]);
-    
+    ])
+
     if (!users || users.length === 0) {
       return Response.json(
         {
           success: false,
           message: "User not found!",
         },
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
-    
+
     return Response.json(
       {
         success: true,
-        message: users[0].messages,
+        messages: users[0].messages,
       },
-      { status: 200 }
-    );
+      { status: 200 },
+    )
   } catch (error) {
-    console.log("user not found", error);
+    console.error("Error fetching user messages:", error)
     return Response.json(
       {
         success: false,
-        message: "User not found!",
+        message: "Failed to fetch messages!",
       },
-      { status: 404 }
-    );
+      { status: 500 },
+    )
   }
 }
